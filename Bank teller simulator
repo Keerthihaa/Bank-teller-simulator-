@@ -1,0 +1,133 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_ACCOUNTS 100
+
+typedef struct {
+    int accountNumber;
+    char accountHolderName[50];
+    double balance;
+} Account;
+
+typedef struct {
+    Account accounts[MAX_ACCOUNTS];
+    int totalAccounts;
+} Bank;
+
+void createAccount(Bank *bank) {
+    if (bank->totalAccounts >= MAX_ACCOUNTS) {
+        printf("Maximum number of accounts reached!\n");
+        return;
+    }
+    
+    Account newAccount;
+    newAccount.accountNumber = 1000 + bank->totalAccounts;
+    printf("Enter account holder's name: ");
+    scanf("%s", newAccount.accountHolderName);
+    newAccount.balance = 0.0;
+
+    bank->accounts[bank->totalAccounts++] = newAccount;
+    printf("Account created successfully! Account Number: %d\n", newAccount.accountNumber);
+}
+
+void depositCash(Bank *bank) {
+    int accountNumber;
+    double amount;
+
+    printf("Enter account number: ");
+    scanf("%d", &accountNumber);
+
+    for (int i = 0; i < bank->totalAccounts; i++) {
+        if (bank->accounts[i].accountNumber == accountNumber) {
+            printf("Enter amount to deposit: ");
+            scanf("%lf", &amount);
+            bank->accounts[i].balance += amount;
+            printf("Cash deposited successfully! New Balance: %.2lf\n", bank->accounts[i].balance);
+            return;
+        }
+    }
+    printf("Account not found!\n");
+}
+
+void withdrawCash(Bank *bank) {
+    int accountNumber;
+    double amount;
+
+    printf("Enter account number: ");
+    scanf("%d", &accountNumber);
+
+    for (int i = 0; i < bank->totalAccounts; i++) {
+        if (bank->accounts[i].accountNumber == accountNumber) {
+            printf("Enter amount to withdraw: ");
+            scanf("%lf", &amount);
+            if (amount > bank->accounts[i].balance) {
+                printf("Insufficient balance!\n");
+                return;
+            }
+            bank->accounts[i].balance -= amount;
+            printf("Cash withdrawn successfully! New Balance: %.2lf\n", bank->accounts[i].balance);
+            return;
+        }
+    }
+    printf("Account not found!\n");
+}
+
+void displayAccountInfo(Bank *bank) {
+    int accountNumber;
+
+    printf("Enter account number: ");
+    scanf("%d", &accountNumber);
+
+    for (int i = 0; i < bank->totalAccounts; i++) {
+        if (bank->accounts[i].accountNumber == accountNumber) {
+            printf("Account Number: %d\n", bank->accounts[i].accountNumber);
+            printf("Account Holder: %s\n", bank->accounts[i].accountHolderName);
+            printf("Balance: %.2lf\n", bank->accounts[i].balance);
+            return;
+        }
+    }
+    printf("Account not found!\n");
+}
+
+void displayMenu() {
+    printf("Bank Teller Service Simulator\n");
+    printf("1. Create Account\n");
+    printf("2. Deposit Cash\n");
+    printf("3. Withdraw Cash\n");
+    printf("4. Display Account Information\n");
+    printf("5. Exit\n");
+    printf("Choose an option: ");
+}
+
+int main() {
+    Bank bank;
+    bank.totalAccounts = 0;
+    int choice;
+
+    while (1) {
+        displayMenu();
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                createAccount(&bank);
+                break;
+            case 2:
+                depositCash(&bank);
+                break;
+            case 3:
+                withdrawCash(&bank);
+                break;
+            case 4:
+                displayAccountInfo(&bank);
+                break;
+            case 5:
+                exit(0);
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+
+    return 0;
+}
